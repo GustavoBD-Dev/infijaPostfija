@@ -33,9 +33,6 @@ int main(){
     char precedenciaPila;
 	char dato, c;
 	string exp;
-	string pI, pF;
-	pI = "(";
-	pF = ")";
 	cout << "INSERTA LA EXPRESION: ";
 	//cin.ignore();//limpiar el buffer
     getline(cin, exp);//se inserta la expresion
@@ -130,6 +127,56 @@ int main(){
                         }
                     }
                 }//fin de else
+                break;
+            case '^':
+                if(pila == NULL){//es el primer caracter
+                    agregarPila(pila,exp[i]);
+                }else{
+                    if(prioridadInfija(exp[i]) > prioridadPila(pila->dato)){//prioridad de operadores
+                        agregarPila(pila, exp[i]);
+                    }else{
+                        if(prioridadInfija(exp[i]) == prioridadPila(pila->dato)){
+                            //vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
+                                c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                                insertarLista(Lista,c);
+                                agregarPila(pila, exp[i]);
+                        }else{
+                            c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                            insertarLista(Lista,c);
+                            agregarPila(pila, exp[i]);
+                        }
+                    }
+                }//fin de else
+                break;
+            case '(':
+                if(pila == NULL){//es el primer caracter
+                    agregarPila(pila,exp[i]);
+                }else{
+                    if(prioridadInfija(exp[i]) > prioridadPila(pila->dato)){//prioridad de operadores
+                        agregarPila(pila, exp[i]);
+                    }else{
+                        if(prioridadInfija(exp[i]) == prioridadPila(pila->dato)){
+                            //vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
+                                c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                                insertarLista(Lista,c);
+                                agregarPila(pila, exp[i]);
+                        }else{
+                            c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                            insertarLista(Lista,c);
+                            agregarPila(pila, exp[i]);
+                        }
+                    }
+                }//fin de else
+                break;
+            case ')':
+                while((pila->dato != '(') && (pila != NULL)){
+                    c = sacarPila(pila);
+                    insertarLista(Lista, c);
+
+                }
+                if(pila->dato == '('){
+                    c = sacarPila(pila);
+                }
                 break;
             default:
                 insertarLista(Lista, exp[i]);
