@@ -15,8 +15,9 @@ struct NodoL {
 };
 //prototipo de funcion para la pila
 void agregarPila(NodoP *&,char);
-void sacarPila(NodoP *&,char &);
+char sacarPila(NodoP *&);
 void mostrarPila(NodoP *);
+void mostrarNodos(NodoP *&);
 //prototipos de funcion para la lista
 void insertarLista(NodoL *&, char);
 void mostrarlista(NodoL *);
@@ -29,13 +30,17 @@ int prioridadPila(char);
 int main(){
     NodoP *pila = NULL;	//Inicializamos pila
     NodoL *Lista = NULL; // se crea un puntero y se iguala a NULL
-
-	char dato;
+    char precedenciaPila;
+	char dato, c;
 	string exp;
-	cout << "INSERTA LA EXPRESION: " << endl;
+	string pI, pF;
+	pI = "(";
+	pF = ")";
+	cout << "INSERTA LA EXPRESION: ";
 	//cin.ignore();//limpiar el buffer
     getline(cin, exp);//se inserta la expresion
-	cout << "\n" << exp << "\n";
+    //exp = pI + exp + pF;
+	cout << "\nEXPRESION INFIJA: " << exp << "\n";
 	for(int i=0; i<exp.length(); i++){
         //si se encuentra un operador se va a la pila
         //si se encuentra un operando se va a la lista
@@ -43,95 +48,106 @@ int main(){
             case '+':
                 if(pila == NULL){//es el primer caracter
                     agregarPila(pila,exp[i]);
-                } else if(prioridadInfija(exp[i] > prioridadPila(exp[i]))){//mayor precedencia
-                    sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                    insertarLista(Lista, exp[i-1]);//lo insertamos en la lista
-                    agregarPila(pila, exp[i]);//agregamos el caracter a la pila
-                }else if(prioridadInfija(exp[i]) <= prioridadPila(exp[i])){//igual o menor precedencia
-                    while(pila != NULL || prioridadInfija(exp[i]) > prioridadPila(exp[i])){//vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
-                        sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                        if(prioridadInfija(exp[i-1]) <= prioridadPila(exp[i-1])){
-                            sacarPila(pila, exp[i-2]);
-                            insertarLista(Lista, exp[i-2]);//lo insertamos en la lista
-                            agregarPila(pila, exp[i-2]);//agregamos el caracter a la pila
+                }else{
+                    if(prioridadInfija(exp[i]) > prioridadPila(pila->dato)){//prioridad de operadores
+                        agregarPila(pila, exp[i]);
+                    }else{
+                        if(prioridadInfija(exp[i]) == prioridadPila(pila->dato)){
+                            //vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
+                          //  while(prioridadInfija(exp[i]) < prioridadPila(pila->dato)){
+                                c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                                insertarLista(Lista,c);
+                                agregarPila(pila, exp[i]);
+                          //  }
+                        }else{
+                            c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                            insertarLista(Lista,c);
+                            agregarPila(pila, exp[i]);
                         }
                     }
-                }else{
-                    agregarPila(pila, exp[i]);
-                }
+                }//fin de else
                 break;
             case '-':
                 if(pila == NULL){//es el primer caracter
                     agregarPila(pila,exp[i]);
-                } else if(prioridadInfija(exp[i] > prioridadPila(exp[i]))){//mayor precedencia
-                    sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                    insertarLista(Lista, exp[i-1]);//lo insertamos en la lista
-                    agregarPila(pila, exp[i]);//agregamos el caracter a la pila
-                }else if(prioridadInfija(exp[i]) <= prioridadPila(exp[i])){//igual o menor precedencia
-                    while(pila != NULL || prioridadInfija(exp[i]) > prioridadPila(exp[i])){//vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
-                        sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                        if(prioridadInfija(exp[i-1]) <= prioridadPila(exp[i-1])){
-                            sacarPila(pila, exp[i-2]);
-                            insertarLista(Lista, exp[i-2]);//lo insertamos en la lista
-                            agregarPila(pila, exp[i-2]);//agregamos el caracter a la pila
+                }else{
+                    if(prioridadInfija(exp[i]) > prioridadPila(pila->dato)){//prioridad de operadores
+                        agregarPila(pila, exp[i]);
+                    }else{
+                        if(prioridadInfija(exp[i]) == prioridadPila(pila->dato)){
+                            //vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
+                           // while(prioridadInfija(exp[i]) < prioridadPila(pila->dato)){
+                                c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                                insertarLista(Lista,c);
+                                agregarPila(pila, exp[i]);
+                         //   }
+                        }else{
+                            c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                            insertarLista(Lista,c);
+                            agregarPila(pila, exp[i]);
                         }
                     }
-                }else{
-                    agregarPila(pila, exp[i]);
-                }
+                }//fin de else
                 break;
             case '/':
                 if(pila == NULL){//es el primer caracter
                     agregarPila(pila,exp[i]);
-                } else if(prioridadInfija(exp[i] > prioridadPila(exp[i]))){//mayor precedencia
-                    sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                    insertarLista(Lista, exp[i-1]);//lo insertamos en la lista
-                    agregarPila(pila, exp[i]);//agregamos el caracter a la pila
-                }else if(prioridadInfija(exp[i]) <= prioridadPila(exp[i])){//igual o menor precedencia
-                    while(pila != NULL || prioridadInfija(exp[i]) > prioridadPila(exp[i])){//vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
-                        sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                        if(prioridadInfija(exp[i-1]) <= prioridadPila(exp[i-1])){
-                            sacarPila(pila, exp[i-2]);
-                            insertarLista(Lista, exp[i-2]);//lo insertamos en la lista
-                            agregarPila(pila, exp[i-2]);//agregamos el caracter a la pila
+                }else{
+                    if(prioridadInfija(exp[i]) > prioridadPila(pila->dato)){//prioridad de operadores
+                        agregarPila(pila, exp[i]);
+                    }else{
+                        if(prioridadInfija(exp[i]) == prioridadPila(pila->dato)){
+                            //vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
+                           // while(prioridadInfija(exp[i]) < prioridadPila(pila->dato)){
+                                c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                                insertarLista(Lista,c);
+                                agregarPila(pila, exp[i]);
+                           // }
+                        }else{
+                            c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                            insertarLista(Lista,c);
+                            agregarPila(pila, exp[i]);
                         }
                     }
-                }else{
-                    agregarPila(pila, exp[i]);
-                }
+                }//fin de else
                 break;
             case '*':
                 if(pila == NULL){//es el primer caracter
                     agregarPila(pila,exp[i]);
-                } else if(prioridadInfija(exp[i] > prioridadPila(exp[i]))){//mayor precedencia
-                    sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                    insertarLista(Lista, exp[i-1]);//lo insertamos en la lista
-                    agregarPila(pila, exp[i]);//agregamos el caracter a la pila
-                }
-                if(prioridadInfija(exp[i]) <= prioridadPila(exp[i])){//igual o menor precedencia
-                    while(pila != NULL || prioridadInfija(exp[i]) > prioridadPila(exp[i])){//vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
-                        sacarPila(pila,exp[i-1]);//sacamos el elemento anterior de la pila
-                        if(prioridadInfija(exp[i-1]) <= prioridadPila(exp[i-1])){
-                            sacarPila(pila, exp[i-2]);
-                            insertarLista(Lista, exp[i-2]);//lo insertamos en la lista
-                            agregarPila(pila, exp[i-2]);//agregamos el caracter a la pila
+                }else{
+                    if(prioridadInfija(exp[i]) > prioridadPila(pila->dato)){//prioridad de operadores
+                        agregarPila(pila, exp[i]);
+                    }else{
+                        if(prioridadInfija(exp[i]) == prioridadPila(pila->dato)){
+                            //vaciar nuestra pila hasta llegar al final o un operado de menor jerarquia
+                                c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                                insertarLista(Lista,c);
+                                agregarPila(pila, exp[i]);
+                        }else{
+                            c = sacarPila(pila);//sacamos el elemento anterior de la pila
+                            insertarLista(Lista,c);
+                            agregarPila(pila, exp[i]);
                         }
                     }
-                }else{
-                    agregarPila(pila, exp[i]);
-                }
+                }//fin de else
                 break;
             default:
                 insertarLista(Lista, exp[i]);
                 break;
         }// fin de switch
         cout << "Elemento: " << exp[i] << " insertado correctamente. " << endl;
+        cout << "PILA: " ;mostrarNodos(pila);
+	}//fin del ciclo for
+
+	//VACIAMOS EL ULTIMO ELEMENTO DE LA PILA
+	while(pila != NULL){
+        c = sacarPila(pila);
+        insertarLista(Lista, c);
 	}
 	//MOSTRANDO ELEMENTOS DE LA PILA
-    cout << "\nMostrando los elementos de la pila: ";
-    mostrarPila(pila);
 	cout << endl;
-	cout << "\nmostrando lista: ";
+	cout << "-----------------------------------------" << endl;
+	cout << "\nEXPRESION POSTFIJA: ";
 	mostrarlista(Lista);
     getch();
 	return 0;
@@ -143,11 +159,14 @@ void agregarPila(NodoP *&pila,char n){
 	nuevo_nodo->siguiente = pila;
 	pila = nuevo_nodo;
 }
-void sacarPila(NodoP *&pila,char &n){
-	NodoP *aux = pila;
-	n = aux->dato;
-	pila = aux->siguiente;
-	delete aux;
+char sacarPila(NodoP *&pila){
+    int n;
+    NodoP *aux = pila;
+    n=pila->dato;
+    aux=pila;
+    pila=pila->siguiente;
+    delete(aux);
+    return n;
 }
 void insertarLista(NodoL *&Lista, char n){
     actual=inicio;
@@ -175,16 +194,12 @@ void mostrarlista(NodoL *Lista){
 	cout<<"\n";
 }
 void mostrarPila(NodoP *pila){
-    char dato;
+    //char dato;
     while(pila != NULL){
-		sacarPila(pila,dato);
-		if(pila != NULL){
-			cout << dato << " ";
-		}
-		else{
-			cout<<dato;
-		}
+		cout<<aux->dato;
+            aux = aux->siguiente;
 	}
+	cout << endl;
 }
 
 int prioridadInfija(char a){
@@ -214,5 +229,16 @@ int prioridadPila(char a){
         return 1;
     if(a=='(')
         return 0;
+}
+void mostrarNodos(NodoP *&pila){
+    NodoP *actual = new NodoP();
+    actual = pila;
+	cout<<" \nMostrar\n ";
+	while(actual!=NULL){
+		cout<<" "<<actual->dato<<" ";
+		actual=actual->siguiente;
+	}
+	cout<<"\n";
+	system("pause");
 }
 
